@@ -9,8 +9,8 @@ const CONFIG = {
     header: `<!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <title>My Tools Collection</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/Unprincess17/bing.xin/refs/heads/main/res/favicon/favicon.ico" type="image/x-icon">
+  <title>Bing.xin's tools</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; }
     .tool-list { list-style: none; padding: 0; }
@@ -28,7 +28,7 @@ const CONFIG = {
   </style>
 </head>
 <body>
-  <h1>My Tools Collection</h1>
+  <h1>Bing.xin's tools</h1>
   <ul class="tool-list">`,
     footer: `  </ul>
 </body>
