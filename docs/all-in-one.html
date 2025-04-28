@@ -4,7 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="https://raw.githubusercontent.com/Unprincess17/bing.xin/refs/heads/main/res/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon"
+        href="https://raw.githubusercontent.com/Unprincess17/bing.xin/refs/heads/main/res/favicon/favicon.ico"
+        type="image/x-icon">
     <title>小而美的All-in-One</title>
     <!-- <meta name='robots' content='max-image-preview:large' /> -->
     <!-- <style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style> -->
@@ -16,6 +18,7 @@
 
     <script src="https://www.jyshare.com/wp-content/themes/toolrunoob2/assets/js/format.js"></script>
     <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/codemirror.min.js"></script>
 </head>
 
 <body>
@@ -49,6 +52,20 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             font-family: Arial, sans-serif;
+        }
+
+        .diffhead {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Split container into two equal columns */
+            width: 100%;
+        }
+
+        .diffbutton{
+            display: flex;
+            justify-self:start;
+            padding-top: 20px;
+            height: 50%;
         }
 
         .buttons {
@@ -100,75 +117,81 @@
     </style>
 
     <div class="runoob-page-content">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-default">
-                    <div id="compiler" class="card-header">
-                        <div class="form-inline" role="form">
-                            <h1 class="font-weight-bold my-1 mx-1"><i class="fas fa-cogs"></i> 在线文本比对工具</strong></h1>
-                        </div>
-                        <div class="card-body">
-                            <div class="row" id="fileArea" style="display:none;">
-                                <div class="col-md-6"><input type="file" class="btn" id="lhsFile"></div>
-                                <div class="col-md-6"><input type="file" class="btn" id="rhsFile"></div>
-                            </div>
-                            <div id="compare1" class="fullscreen" style="height: 230px;"></div>
-                        </div>
-                    </div>
-                </div>
-                <script type="text/javascript"
-                    src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.65.2/addon/search/searchcursor.min.js"></script>
-                <script type="text/javascript"
-                    src="https://cdnjs.cloudflare.com/ajax/libs/mergely/5.0.0/mergely.min.js"></script>
-                <link type="text/css" rel="stylesheet"
-                    href="https://cdnjs.cloudflare.com/ajax/libs/mergely/5.0.0/mergely.css" />
-                <script>
-                    $(document).ready(function () {
-                        const doc = new Mergely('#compare1', {
-                            width: 'auto',
-                            license: 'lgpl-separate-notice',
-                            cmsettings: {
-                                readOnly: false,
-                                lineWrapping: true,
-                            },
-
-                            lhs: function (setValue) {
-                                setValue('我是奶龙\nThis is a test');
-                            },
-                            rhs: function (setValue) {
-                                setValue('我才是奶龙\ntest 2');
-                            }
-                        });
-                    });
-
-                </script>
+        <div class="diffhead">
+            <!-- Title Column -->
+            <div class="headtitle">
+                <h1> 在线文本比对工具 </h1>
             </div>
+            
+            <!-- Button Column -->
+            <div class="diffbutton">
+                <button id="clearContent" class="btn text-nowrap">清除所有内容</button>
+            </div>
+
         </div>
+        <div id="compare1" class="fullscreen" style="height: 230px;"></div>
+
+        <script type="text/javascript"
+            src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.65.2/addon/search/searchcursor.min.js"></script>
+        <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mergely/5.0.0/mergely.min.js"></script>
+        <link type="text/css" rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/mergely/5.0.0/mergely.css" />
+        <script>
+            $(document).ready(function () {
+                // 将Mergely实例保存在全局变量中
+                window.doc = new Mergely('#compare1', {
+                    width: 'auto',
+                    license: 'lgpl-separate-notice',
+                    cmsettings: {
+                        readOnly: false,
+                        lineWrapping: true,
+                    },
+                    lhs: function (setValue) {
+                        setValue('我是奶龙\nThis is a test');
+                    },
+                    rhs: function (setValue) {
+                        setValue('我才是奶龙\ntest 2');
+                    }
+                });
+
+                // 添加清除功能
+                $('#clearContent').click(function () {
+                    // 清空Mergely内容
+                    window.doc.lhs('');  // 清空左侧编辑器
+                    window.doc.rhs('');  // 清空右侧编辑器
+
+                    // 清空文件输入（如果有的话）
+                    $('#lhsFile').val('');
+                    $('#rhsFile').val('');
+                });
+            });
+        </script>
     </div>
 
     <div class="line-break-remover">
-    <h1>Line Break Remover</h1>
-    <div class="container">
-        <div class="panel">
-            <h2>Input</h2>
-            <textarea id="input" placeholder="Enter text with line breaks..."></textarea>
+        <h1>Line Break Remover</h1>
+        <div class="container">
+            <div class="panel">
+                <h2>Input</h2>
+                <textarea id="input" placeholder="Enter text with line breaks..."></textarea>
+            </div>
+            <div class="panel">
+                <h2>Output</h2>
+                <textarea id="output" readonly placeholder="Processed output will appear here..."></textarea>
+            </div>
         </div>
-        <div class="panel">
-            <h2>Output</h2>
-            <textarea id="output" readonly placeholder="Processed output will appear here..."></textarea>
+        <div class="buttons">
+            <div class="left-buttons">
+                <button id="chineseButton">Remove Line Breaks in Chinese</button>
+                <button id="englishButton">Remove Line Breaks in English</button>
+            </div>
+            <div class="right-buttons">
+                <button id="simplifiedToTraditional">Simplified to Traditional</button>
+                <button id="traditionalToSimplified">Traditional to Simplified</button>
+            </div>
         </div>
-    </div>
-    <div class="buttons">
-        <div class="left-buttons">
-            <button id="chineseButton">Remove Line Breaks in Chinese</button>
-            <button id="englishButton">Remove Line Breaks in English</button>
-        </div>
-        <div class="right-buttons">
-            <button id="simplifiedToTraditional">Simplified to Traditional</button>
-            <button id="traditionalToSimplified">Traditional to Simplified</button>
-        </div>
-    </div>
-    <div id="message" class="message"></div>
+        <div id="message" class="message"></div>
     </div>
 
     <script>
