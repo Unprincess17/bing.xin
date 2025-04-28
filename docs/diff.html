@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <title> 在线文本比对工具</title>
+    <!-- <meta name='robots' content='max-image-preview:large' /> -->
+    <!-- <style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style> -->
+    <link rel='stylesheet' id='wpProQuiz_front_style-css'
+        href='https://www.jyshare.com/wp-content/plugins/Wp-Pro-Quiz/css/wpProQuiz_front.min.css?ver=0.37'
+        type='text/css' media='all' />
+    <!-- <link rel="canonical" href="https://www.jyshare.com/front-end/8006/" /> -->
+    <meta name="keywords" content="在线文本比对工具">
+    <meta name="description" content="在线文本比对工具，可以比较文本的差异，只需要将要比较的两个文本放到左右两个输入框中，即可实时完成文本比较，文本比较的差异会显著的标注出来。。。..">
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/codemirror.min.js"></script>
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/addon/mode/simple.min.js"></script>
+    <link rel="stylesheet" href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/codemirror.min.css">
+    <link rel="stylesheet"
+        href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/theme/material.min.css">
+
+
+    <script
+        src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/htmlmixed/htmlmixed.js"></script>
+
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/css/css.js"></script>
+
+    <script
+        src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/javascript/javascript.js"></script>
+
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.48.2/mode/xml/xml.js"></script>
+    <script src="https://www.jyshare.com/wp-content/themes/toolrunoob2/assets/js/format.js"></script>
+
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="https://www.jyshare.com/wp-content/themes/toolrunoob2/bootstrap.min.css">
+
+    <!-- Custom Fonts -->
+    <link href="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"
+        type="text/css">
+    <!--[if lt IE 9]> 
+        <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/html5shiv/r29/html5.min.js"></script>
+        <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- PHP 代码 -->
+    <link rel="stylesheet" href="https://www.jyshare.com/wp-content/themes/toolrunoob2/style.css?version=1.403">
+
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/clipboard.js/2.0.4/clipboard.min.js"></script>
+</head>
+
+<body>
+    <style>
+        .runoob-page-content {
+            margin: -90px 5px;
+        }
+    </style>
+
+
+    <div class="runoob-page-content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-default">
+                    <div id="compiler" class="card-header">
+                        <div class="form-inline" role="form">
+                            <h4 class="font-weight-bold my-1 mx-1"><i class="fas fa-cogs"></i> 在线文本比对工具</strong></h4>
+                            <!-- <button id="uploadFile" class="btn btn-warning my-1 mx-1"><i class="fas fa-cloud-upload-alt"></i> 上传文件</button>  -->
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="fileArea" style="display:none;">
+                                <div class="col-md-6"><input type="file" class="btn" id="lhsFile"></div>
+                                <div class="col-md-6"><input type="file" class="btn" id="rhsFile"></div>
+                            </div>
+
+                            <div id="compare1" class="fullscreen" style="height: 500px;"></div>
+
+                        </div>
+                    </div>
+                </div>
+                <script type="text/javascript"
+                    src="https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/codemirror/5.65.2/addon/search/searchcursor.min.js"></script>
+
+                <!-- <script src="https://static.jyshare.com/assets/mergely/5.3.6/lib/mergely.min.js"></script>
+                <link rel="stylesheet" media="all"
+                    href="https://static.jyshare.com/assets/mergely/5.3.6/lib/mergely.css" /> -->
+                <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mergely/5.0.0/mergely.min.js"></script>
+                <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mergely/5.0.0/mergely.css" />
+                <script>
+                    $(document).ready(function () {
+                        const doc = new Mergely('#compare1', {
+                            width: 'auto',
+                            license: 'lgpl-separate-notice',
+                            cmsettings: {
+                                readOnly: false,
+                                lineWrapping: true,
+                            },
+
+                            lhs: function (setValue) {
+                                setValue('我是奶龙\nThis is a test');
+                            },
+                            rhs: function (setValue) {
+                                setValue('我才是奶龙\ntest 2');
+                            }
+                        });
+                        $("#uploadFile").click(function () {
+                            $("#fileArea").show();
+                        });
+                        $("#lhsFile").change(function () {
+                            changeToFileContent(this, doc.lhs);
+                        });
+                        $("#rhsFile").change(function () {
+                            changeToFileContent(this, doc.rhs);
+                        });
+
+                    });
+
+                </script>
+            </div>
+        </div>
+        <!-- Footer -->
+        <footer class="page-footer mt-4 pt-4">
+            <!-- Copyright -->
+            <div class="footer-copyright text-center py-3">Copied from 
+                <a href="www.jyshare.com/front-end/8006/"> Runoob.com</a>
+            </div>
+            <!-- Copyright -->
+
+        </footer>
+        <script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/bootstrap/4.6.0/js/bootstrap.bundle.min.js"
+            crossorigin="anonymous"></script>
+        <script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/*"},{"not":{"href_matches":["\/wp-*.php","\/wp-admin\/*","\/wp-content\/uploads\/*","\/wp-content\/*","\/wp-content\/plugins\/*","\/wp-content\/themes\/toolrunoob2\/*","\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+        <script>
+
+
+            (function ($) {
+                var p = $('.runoob-item-index');
+                if (p.length < 1) return;
+                var arr = [];
+                function part_offset_top () {
+                    p.each(function () {
+                        var of = $(this).offset();
+                        arr.push(Math.floor(of.top));
+                    });
+                }
+                function goto_current (index) {
+                    var a = $('#goto dd');
+                    var b = $('#goto dt');
+                    if (a.length < 1) return;
+                    var h = a.outerHeight();
+                    if (!a.eq(index).hasClass('current')) {
+                        a.removeClass('current');
+                        a.eq(index).addClass('current');
+                        // console.log(index)
+                        b.animate({
+                            'top': h * index + (a.outerHeight() - b.outerHeight()) / 2 + 1
+                        }, 50);
+                    }
+                }
+                function window_scroll () {
+                    var st = window.pageYOffset
+                        || document.documentElement.scrollTop
+                        || document.body.scrollTop
+                        || 0;
+                    var limit = Math.ceil(st + 98);
+                    var index = 0;
+                    for (var i = 0; i < arr.length; i++) {
+                        if (limit >= arr[i]) {
+                            index = i;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (index < 0) index = 0;
+                    if (!p.eq(index).hasClass('current')) {
+                        p.removeClass('current');
+                        p.eq(index).addClass('current');
+                        goto_current(index);
+                    }
+                }
+                part_offset_top();
+                setTimeout(window_scroll, 0);
+                $(window).on('scroll', window_scroll);
+            })(jQuery);
+            /* --侧边栏滚动时固定-- */
+            (function ($) {
+                var s = $('.sidebar');
+
+                if (s.length < 1) return;
+                var c = s.children('.content-sidebar');
+                if (c.length < 1) return;
+                var $parent = s.parent();
+                if ($parent.length < 1) return;
+                var start = 0, stop = 0, cHeight = 0;
+                function init () {
+                    var soffset = s.offset();
+                    start = soffset.top;
+                    stop = start + $parent.height();
+                    cinit();
+                }
+                function cinit () {
+                    cHeight = c.height();
+                }
+                function cClear () {
+                    c.removeClass('fixed');
+                    c.removeClass('absolute');
+                }
+                function check_scroll () {
+                    var st = window.pageYOffset
+                        || document.documentElement.scrollTop
+                        || document.body.scrollTop
+                        || 0;
+                    if (st <= start) {
+                        cClear();
+                    }
+                    if (st >= stop - cHeight) {
+                        c.removeClass('fixed');
+                        c.addClass('absolute');
+                        return;
+                    }
+                    if (st < stop - cHeight && st > start) {
+                        c.removeClass('absolute');
+                        c.addClass('fixed');
+                    }
+                }
+
+                init();
+                check_scroll();
+                $(window).on('resize', init);
+                $(window).on('scroll', check_scroll);
+            })(jQuery);
+
+            (function () {
+                'use strict'
+
+                document.querySelector('#navbarSideCollapse').addEventListener('click', function () {
+                    document.querySelector('.offcanvas-collapse').classList.toggle('open')
+                })
+            })()
+        </script>
+        <div style="display:none;">
+            <script>
+                var _hmt = _hmt || [];
+                (function () {
+                    var hm = document.createElement("script");
+                    hm.src = "https://hm.baidu.com/hm.js?6d663ac80d8b95a60e359ffed9f3d0d0";
+                    var s = document.getElementsByTagName("script")[0];
+                    s.parentNode.insertBefore(hm, s);
+                })();
+            </script>
+            <!-- Google tag (gtag.js) -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-2BKSTK8N4K"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag () { dataLayer.push(arguments); }
+                gtag('js', new Date());
+
+                gtag('config', 'G-2BKSTK8N4K');
+            </script>
+        </div>
+
+
+        <div class="modal fade" id="tg-1" tabindex="-1" role="dialog" aria-labelledby="tg-1" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title font-weight-bold text-danger"><i class="fas fa-comments-dollar"></i>
+                            textxx</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            xxx
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</body>
+
+</html>

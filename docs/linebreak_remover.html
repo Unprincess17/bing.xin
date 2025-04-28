@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Line Break Remover</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+    .panel {
+      flex: 1;
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+    }
+
+    .buttons {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Split container into two equal columns */
+        width: 100%;
+    }
+    
+    .left-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .right-buttons {
+        display: flex;
+        gap: 10px;
+        margin-left: 10px;
+        justify-self: start; /* Align to start of the second column (center line) */
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .right-buttons button {
+      background-color: #28a745;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/opencc-js@1.0.5/dist/umd/full.min.js"></script>
+</head>
+<body>
+  <h1>Line Break Remover</h1>
+  <div class="container">
+    <div class="panel">
+      <h2>Input</h2>
+      <textarea id="input" placeholder="Enter text with line breaks..."></textarea>
+    </div>
+    <div class="panel">
+      <h2>Output</h2>
+      <textarea id="output" readonly placeholder="Processed output will appear here..."></textarea>
+    </div>
+  </div>
+  <div class="buttons">
+    <div class="left-buttons">
+      <button id="chineseButton">Remove Line Breaks in Chinese</button>
+      <button id="englishButton">Remove Line Breaks in English</button>
+    </div>
+    <div class="right-buttons">
+      <button id="simplifiedToTraditional">Simplified to Traditional</button>
+      <button id="traditionalToSimplified">Traditional to Simplified</button>
+    </div>
+  </div>
+  <div id="message" class="message"></div>
+
+  <script>
+    // Function to detect the operating system
+    function detectOS() {
+      const userAgent = navigator.userAgent;
+      if (userAgent.includes("Win")) {
+        return "Windows";
+      } else if (userAgent.includes("Mac")) {
+        return "macOS";
+      } else {
+        return "Unknown OS";
+      }
+    }
+
+    // Function to remove line breaks in Chinese text
+    async function removeLineBreaksChinese() {
+      const inputText = document.getElementById("input").value;
+      const outputText = inputText.replace(/\r?\n/g, ""); // Remove all line breaks
+      document.getElementById("output").value = outputText;
+      document.getElementById("input").value = ""; // Clear the input field
+
+      try {
+        await navigator.clipboard.writeText(outputText); // Copy to clipboard
+        const os = detectOS();
+        document.getElementById("message").textContent = 
+          `Detected OS: ${os}. Output copied to clipboard!`;
+      } catch (err) {
+        document.getElementById("message").textContent = 
+          "Failed to copy to clipboard. Please try again.";
+      }
+    }
+
+    // Function to remove or replace line breaks in English text
+    async function removeLineBreaksEnglish() {
+      const inputText = document.getElementById("input").value;
+      let outputText = inputText.replace(/\r?\n/g, (match, offset, string) => {
+        // Replace line breaks with a space if they separate words
+        const prevChar = string[offset - 1];
+        const nextChar = string[offset + 1];
+        if (/[a-zA-Z]/.test(prevChar) && /[a-zA-Z]/.test(nextChar)) {
+          return " "; // Replace with space
+        }
+        return ""; // Remove otherwise
+      });
+      document.getElementById("output").value = outputText;
+      document.getElementById("input").value = ""; // Clear the input field
+
+      try {
+        await navigator.clipboard.writeText(outputText); // Copy to clipboard
+        const os = detectOS();
+        document.getElementById("message").textContent = 
+          `Detected OS: ${os}. Output copied to clipboard!`;
+      } catch (err) {
+        document.getElementById("message").textContent = 
+          "Failed to copy to clipboard. Please try again.";
+      }
+    }
+
+    async function convertSimplifiedToTraditional() {
+        const inputText = document.getElementById('input').value;
+        const converter = OpenCC.Converter({ from: 'cn', to: 'tw' });
+        const outputText = converter(inputText);
+        const nolinebreaks = outputText.replace(/\r?\n/g, "");
+        document.getElementById('output').value = nolinebreaks;
+    }
+
+    async function convertTraditionalToSimplified() {
+        const inputText = document.getElementById('input').value;
+        const converter = OpenCC.Converter({ from: 'tw', to: 'cn' });
+        const outputText = converter(inputText);
+        const nolinebreaks = outputText.replace(/\r?\n/g, ""); 
+        document.getElementById('output').value = nolinebreaks;
+    }
+
+    // Attach event listeners to the buttons
+    document.getElementById("chineseButton").addEventListener("click", removeLineBreaksChinese);
+    document.getElementById("englishButton").addEventListener("click", removeLineBreaksEnglish);
+    document.getElementById('simplifiedToTraditional').addEventListener('click', convertSimplifiedToTraditional);
+    
+    document.getElementById('traditionalToSimplified').addEventListener('click', convertTraditionalToSimplified);
+  </script>
+</body>
+</html>
