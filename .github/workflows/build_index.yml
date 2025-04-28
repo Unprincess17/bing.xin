@@ -1,0 +1,59 @@
+name: Auto Build Index
+
+on:
+  push:
+    branches: [ main ]
+    paths: 
+      - 'docs/**'
+      - '.github/workflows/build-index.yml'
+      - res/favicon/**
+  
+  workflow_dispatch:
+
+
+jobs:
+  generate-index:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 必须的权限
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Generate Index
+        run: |
+          cd docs
+          npm install path
+          node ../_scripts/generate_index.js
+
+      - name: Build favicon
+        run: |
+          cd res/favicon
+          npm install path
+          node ../../_scripts/generate_favicon.js
+
+      - name: Commit changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 配置 Git 身份
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          # 添加安全目录白名单（必须）
+          git config --global --add safe.directory /github/workspace
+
+          # 添加远程 URL 包含 Token
+          git remote set-url origin https://x-access-token:$GH_TOKEN@github.com/${{ github.repository }}.git
+
+          git add res/favicon/favicon.ico
+          git add docs/index.html
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: Auto-generated index"
+          git push
